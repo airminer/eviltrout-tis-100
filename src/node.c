@@ -348,7 +348,10 @@ void node_tick(Node *n) {
       if (n->acc < MIN_ACC) n->acc = MIN_ACC;
       break;
     case JMP: node_set_ip(n, i->src.number); return;
-    case JRO: node_set_ip(n, n->ip + i->src.number); return;
+    case JRO:
+      read = node_read(n, i->src_type, i->src);
+      if (read.blocked) return;
+      node_set_ip(n, n->ip + read.value); return;
     case JEZ:
       if (n->acc == 0) {
         node_set_ip(n, i->src.number);
